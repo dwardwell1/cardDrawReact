@@ -12,7 +12,7 @@ const Autodeck = () => {
     const url = "http://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1"
 
   
-    const [running, setRunning] = useState(true);
+    const [autoDraw, setAutodraw] = useState(false);
     const [deck, setDeck] = useState();
     // const [card, setCard] = useState(null);
     const [cards, setCards] = useState([]);
@@ -26,11 +26,7 @@ const Autodeck = () => {
         fetchDeck();
     }, [url]);
 
-  const stopDraw = () => {
-        clearInterval(timerId.current);
-        setRunning(false)
-    
-    }
+
 
     function getCard() {
         async function fetchCard() {
@@ -39,40 +35,50 @@ const Autodeck = () => {
             let newCard = [response.data.cards[0].image]
             
             setCards(cards => cards.concat(newCard))
-            setRunning(true)
+           
         }
         fetchCard();
         }
 
-    useEffect(() => {
-        // timerId.current = setInterval(getCard, 1000);
-        timerId.current = setInterval(() => {
-            getCard();}, 1000);
-        return () => clearInterval(timerId.current);
+useEffect(() => {
+   if (autoDraw && cards.length < 51 ) {
+    timerId.current = setInterval(async () => { await getCard()}, 1000);} else {
+    
+    console.log("stop")  
+    clearInterval(timerId.current);
+    timerId.current = null;
+    }
+    return () => {
+        clearInterval(timerId.current);
+        timerId.current = null;
+      }
+}, [autoDraw]);
+   
+     const toggleAutodraw = () => {
+         
+        setAutodraw(autoDraw => !autoDraw);
+        
+    }
 
-
-    }, [getCard]);
-
-  
-   //I cheated for fresh deck and just refreshed page though I would prefer to do it without resfreshing
-   function refreshPage() {
+   
+    function refreshPage() {
     window.location.reload(false);
   }
 
     return (
         <div>
-            { running  ?  <button onClick={stopDraw}>Stop Draw Automate</button> : <div>
-            <button onClick={getCard}> Start Draw</button>
+            { autoDraw  ?  <button onClick={toggleAutodraw }>Stop Draw Automate</button> : <div>
+            <button onClick={toggleAutodraw }> Start Draw</button>
             </div>
             }
-            {cards.length == 52 ? <div><h1>Error: deck is full!</h1>
+            {cards.length === 52 ? <div><h1>Error: deck is full!</h1>
             <button onClick={refreshPage}>New Deck</button>
             </div>
             : null
             }
             
        
-             <div class="stack-cards">{cards.map((card, i) => (
+             <div className="stack-cards">{cards.map((card, i) => (
                 
                     <Card key={i} src={card} />
                 ))}</div> 

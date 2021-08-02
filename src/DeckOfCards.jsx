@@ -48,7 +48,7 @@ const DeckOfCards = () => {
             }
             
             <button onClick={test} title="array of card sources in console">Test</button>
-             <div class="stack-cards">{cards.map((card, i) => (
+             <div className="stack-cards">{cards.map((card, i) => (
                 
                     <Card key={i} src={card} />
                 ))}</div> 

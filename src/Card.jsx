@@ -1,10 +1,10 @@
 import './App.css';
 
-const Card = ({key,src}) => {
+const Card = ({src}) => {
     console.log()
     return (
     
-        <img class="stack-cards__item" src={src} key={key}  alt="" />
+        <img className="stack-cards__item" src={src}   alt="" />
      
         
      )}
